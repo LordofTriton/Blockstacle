@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link rel="stylesheet" href="./styles.css" />
+    </head>
+    <body>
+        <div class="gameArea" id="gameArea">
+            <div class="player" id="playerObject">
+                <img id="playerShip" class="playerShip" src="./assets/images/ships/ship1.png" alt="player" />
+                <div class="playerShipThrust">
+                    <div class="playerShipThrustSpark1"></div>
+                    <div class="playerShipThrustSpark2"></div>
+                    <div class="playerShipThrustSpark3"></div>
+                    <div class="playerShipThrustSpark4"></div>
+                    <div class="playerShipThrustSpark5"></div>
+                    <div class="playerShipThrustSpark6"></div>
+                </div>
+            </div>
+            <div class="pauseBanner" id="pauseBanner">
+                <div class="pauseBannerMenu">
+                    <button class="pauseBannerMenuButton" onclick="pauseGame()">Resume</button>
+                    <button class="pauseBannerMenuButton">Quit</button>
+                </div>
+            </div>
+
+            <div class="resultBanner" id="resultBanner">
+                <h3 class="resultBannerTitle">Oops!<span class="resultBannerRemark">You hit a glob!</span></h3>
+                <div style="width: 100%; overflow: hidden; margin-bottom: 30px;">
+                    <div style="float: left; margin-right: 100px;">
+                        <h3 class="resultPlayerScoreTitle">Your Score</h3>
+                        <h3 class="resultPlayerScore" id="resultBannerCurrent"></h3>
+                    </div>
+                    <div style="float: left; margin-right: 100px;">
+                        <h3 class="resultPlayerScoreTitle">Highscore</h3>
+                        <h3 class="resultPlayerScore" id="resultBannerHigh"></h3>
+                    </div>
+                </div>
+
+                <button class="resultBannerButton" onclick="startGame()">Restart</button>
+            </div>
+
+            <img src="assets/images/Utility/Pause_BTN.png" alt="pause" class="pauseBtn" onclick="pauseGame()" id="pauseBtn" />
+            <h3 class="playerScore" id="scoreBoard"></h3>
+        </div>
+
+        <script type="text/javascript" src="./engine.js"></script>
+    </body>
+</html>
