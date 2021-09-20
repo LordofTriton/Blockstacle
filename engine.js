@@ -32,12 +32,12 @@ const middleLane = 260
 const bottomLane = 460
 
 //Default Gameplay Values
-let globSpeed = 10;
+let blockSpeed = 10;
 const accel = 0.1;
 let playerPos = middleLane
 let gameStates = {Active: "Active", Paused: "Paused", Over: "Over"}
 let currentGameState = gameStates.Active
-let globList = [];
+let blockList = [];
 let playerScore = 1;
 
 //Gameplay Values
@@ -53,10 +53,10 @@ function startGame() {
     currentPlayerState = playerStates.Normal;
     resultBanner.style.left = "100vw";
     currentGameState = gameStates.Active;
-    globList.forEach((glob) => {
-        glob.remove();
+    blockList.forEach((block) => {
+        block.remove();
     })
-    globSpeed = 10;
+    blockSpeed = 10;
 }
 
 // function createTrailSpark() {
@@ -73,16 +73,24 @@ function getObjProp(obj, prop) {
 }
 
 function isColliding(object1, object2) {
-    let objectOneBox = {width: getObjProp(object1, "width"), height: getObjProp(object1, "height")}
-    let objectTwoBox = {width: getObjProp(object2, "width"), height: getObjProp(object2, "width")}
-    let objectOnePos = {x: getObjProp(object1, "left") + objectOneBox.width / 2, y: getObjProp(object1, "top") + objectOneBox.height / 2}
-    let objectTwoPos = {x: getObjProp(object2, "left") + objectTwoBox.width / 2, y: getObjProp(object2, "top") + objectTwoBox.height / 2}
+    return (
+            getObjProp(object1, "left") >= getObjProp(object2, "left")
+            && getObjProp(object1, "left") <= getObjProp(object2, "left") + getObjProp(object2, "width")
+        )
+        && (
+            getObjProp(object1, "top") >= getObjProp(object2, "top")
+            && getObjProp(object1, "top") <= getObjProp(object2, "top") + getObjProp(object2, "height")
+        )
+    // let objectOneBox = {width: getObjProp(object1, "width"), height: getObjProp(object1, "height")}
+    // let objectTwoBox = {width: getObjProp(object2, "width"), height: getObjProp(object2, "width")}
+    // let objectOnePos = {x: getObjProp(object1, "left") + objectOneBox.width / 2, y: getObjProp(object1, "top") + objectOneBox.height / 2}
+    // let objectTwoPos = {x: getObjProp(object2, "left") + objectTwoBox.width / 2, y: getObjProp(object2, "top") + objectTwoBox.height / 2}
 
-    if (
-        Math.abs(objectOnePos.x - objectTwoPos.x) < (objectOneBox.width + objectTwoBox.width) * 0.3
-        && Math.abs(objectOnePos.y - objectTwoPos.y) < (objectOneBox.height + objectTwoBox.height) * 0.3
-    ) return true
-    else return false
+    // if (
+    //     Math.abs(objectOnePos.x - objectTwoPos.x) < (objectOneBox.width + objectTwoBox.width) / 2
+    //     && Math.abs(objectOnePos.y - objectTwoPos.y) < (objectOneBox.height + objectTwoBox.height) / 2
+    // ) return true
+    // else return false
 }
 
 function moveShip() {
@@ -107,38 +115,58 @@ function keyListener(event) {
     }
 }
 
-function spawnGlob() {
+function spawnBlock() {
     if (currentGameState === gameStates.Active) {
-        let glob = createGlob()
-        globList.push(glob)
-        gameArea.appendChild(glob)
+        let block = createBlock()
+        blockList.push(block)
+        gameArea.appendChild(block)
 
-        globSpeed += 0.2
+        blockSpeed += 0.2
     }
 }
 
-function createGlob() {
-    let newGlob = document.createElement("img")
-    newGlob.src = blobImages[Math.floor(Math.random() * 5)]
-    newGlob.alt = "glob"
-    newGlob.classList.add("glob")
-    newGlob.style.left = windowWidth + 300 + "px"
-    newGlob.style.top = [-50, 150, 320][Math.floor(Math.random() * 3)] + "px";
-    newGlob.style.animation = `${["rotateLeft", "rotateRight"][Math.floor(Math.random() * 2)]} 20s infinite`
+// function createGlob() {
+//     let newGlob = document.createElement("img")
+//     newGlob.src = blobImages[Math.floor(Math.random() * 5)]
+//     newGlob.alt = "glob"
+//     newGlob.classList.add("glob")
+//     newGlob.style.left = windowWidth + 300 + "px"
+//     newGlob.style.top = [-50, 150, 320][Math.floor(Math.random() * 3)] + "px";
+//     newGlob.style.animation = `${["rotateLeft", "rotateRight"][Math.floor(Math.random() * 2)]} 20s infinite`
 
-    return newGlob
+//     return newGlob
+// }
+
+function spawnPoint() {
+    let point = windowWidth + 300
+    blockList.forEach((block) => {
+        if (Math.abs(point - (getObjProp(block, "left") + getObjProp(block, "width"))) < 200) {
+            point += Math.floor(Math.random() * 400)
+        }
+    })
+    return point
 }
 
-function moveGlob() {
-    if (currentGameState === gameStates.Active) {
-        globList.forEach((glob) => {
-            let xPos = parseInt(glob.style.left)
-            if (xPos <= -300) {glob.remove()}
-            else {
-                glob.style.left = `${xPos - globSpeed}px`
-            }
+function createBlock() {
+    let newBlock = document.createElement("div")
+    // newBlock.style.backgroundColor = "#EF017C";
+    newBlock.style.width = [180, 280, 380][Math.floor(Math.random() * 3)] + "px";
+    newBlock.classList.add("block")
+    newBlock.style.left = spawnPoint() + "px"
+    newBlock.style.top = [10, 210, 410][Math.floor(Math.random() * 3)] + "px";
+    return newBlock
+}
 
-            if (isColliding(playerObject, glob)) destroyPlayer()
+function moveBlock() {
+    if (currentGameState === gameStates.Active) {
+        blockList.forEach((block) => {
+            let xPos = getObjProp(block, "left")
+            let blockWidth = getObjProp(block, "width")
+            if (xPos <= -blockWidth) {block.remove()}
+            else {
+                block.style.left = `${xPos - blockSpeed}px`
+            }
+            if (isColliding(playerObject, block)) destroyPlayer()
         })
     }
 }
@@ -163,9 +191,9 @@ function gameOver() {
     // alert("Hello")
     currentGameState = gameStates.Over;
 
-    let highScore = localStorage.getItem("globstacleHighScore")
+    let highScore = localStorage.getItem("blockstacleHighScore")
     if (playerScore > highScore) {
-        localStorage.setItem("globstacleHighScore", Math.floor(playerScore))
+        localStorage.setItem("blockstacleHighScore", Math.floor(playerScore))
         highScore = Math.floor(playerScore)
     }
     resultBannerHigh.innerHTML = highScore
@@ -182,8 +210,8 @@ function updateScore() {
 
 window.addEventListener("keydown", keyListener);
 
-let globSpawn = setInterval(() => {spawnGlob()}, 1000 * (5 / globSpeed));
+let blockSpawn = setInterval(() => {spawnBlock()}, 1000 * (5 / blockSpeed));
 
-let globMotor = setInterval(() => moveGlob(), 20);
+let blockMotor = setInterval(() => moveBlock(), 20);
 
 let creditWHereItsDue = setInterval(() => updateScore(), 100);
